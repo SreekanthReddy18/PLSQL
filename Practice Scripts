@@ -1,0 +1,273 @@
+--alter session set "_ORACLE_SCRIPT"=true;
+----new user creation-----
+--create user practice identified by practice;
+--grant create session,grant any privilege to practice; 
+
+-----declare variable in Anonymous block---
+DECLARE
+ordernumber CONSTANT number:=1000;
+orderId NUMBER default 1002;
+customerName varchar2(4000):='Sreekanth Reddy';
+orderDate date:='23-MAY-2019';
+BEGIN
+/*
+this is a multiline comment
+*/
+--Single line comment
+   DBMS_OUTPUT.PUT_LINE(ordernumber);
+   DBMS_OUTPUT.put_line(orderId);
+   DBMS_OUTPUT.PUT_LINE(customerName);
+   DBMS_OUTPUT.PUT_LINE(orderDate);
+END;
+
+-----Global and Local variable declaration---
+
+DECLARE
+ globalNum number:=1000;
+BEGIN
+  dbms_output.put_line(globalNum);
+  
+  DECLARE
+  localNum number:=1002;
+  BEGIN
+  
+  dbms_output.put_line(localNum);
+  dbms_output.put_line(globalNum);
+  END;
+  
+END;
+
+----if condition-------
+
+DECLARE
+ ifAmount number:=1000;
+ discount number:=0;
+BEGIN
+  if ifAmount>0 and ifAmount<1500
+  then 
+  discount:=ifAmount*0.1;
+  elsif ifAmount>=1500
+  then
+  discount:=ifAmount*0.15;
+  else 
+  discount:=ifAmount*0;
+  end if;
+  dbms_output.put_line(discount);
+END;
+
+-------When condition-----
+
+DECLARE
+ whenAmount number:=1000;
+ discount number:=0;
+BEGIN
+   CASE
+   when whenAmount>0 and whenAmount<1500
+   then 
+   discount:=whenAmount*0.1;
+   when whenAmount>=1500
+   then
+   discount:=whenAmount*0.15;
+   else
+   discount:=whenAmount*0;
+   end case;
+   dbms_output.put_line(discount);
+END;
+
+
+-------While Loop-------
+
+DECLARE
+ whileNumber number(4):=1000;
+BEGIN
+     while whileNumber <= 1010
+     loop
+     dbms_output.put_line(whileNumber);
+     whileNumber:=whileNumber+1;
+     end loop;
+END;
+
+----- For Loop -----
+
+DECLARE
+ forNumber number(2):=10;
+BEGIN
+     for forNumber in 10..20
+     Loop
+     Dbms_output.put_line(forNumber);
+     End loop;
+END;
+
+----Fetching data from Database using plsql------
+----TYPE
+DECLARE
+c_id customer.customer_id%type:=10;
+c_name customer.first_name%type;
+c_addr customer.country%type;
+BEGIN
+select first_name,country into c_name,c_addr from customer where customer_id=c_id;
+dbms_output.put_line(c_name);
+dbms_output.put_line(c_addr);
+END;
+
+-------Insert with Type----
+
+DECLARE
+c_id          customer.customer_id%type:=13;
+c_fname       customer.first_name%type:='Sreekanth';
+c_lname       customer.last_name%type:='palem';
+c_mname       customer.middle_name%type:='Reddy';
+c_addr1       CUSTOMER.ADDRESS_LINE1%type:='Andra pradesh';
+c_addr2       CUSTOMER.ADDRESS_LINE2%type:='Prakasam';
+c_city        CUSTOMER.CITY%type:='Ongole';
+c_country     CUSTOMER.COUNTRY%type:='India';
+c_date_added  CUSTOMER.DATE_ADDED%type:=sysdate;
+c_region      CUSTOMER.REGION%type:='south';
+BEGIN
+
+  insert into customer(customer_id,first_name,last_name,middle_name,ADDRESS_LINE1,ADDRESS_LINE2,CITY,
+  COUNTRY,DATE_ADDED,REGION) values(c_id,c_fname,c_lname,c_mname,c_addr1,c_addr2,c_city,c_country,c_date_added,c_region);
+  commit;
+  dbms_output.put_line('Data inserted successfully');
+end;
+--select * from CUSTOMER;
+
+------Create procedure with IN parameter------
+create or replace procedure add_customer(
+c_id        IN number,
+c_fname     IN varchar2,
+c_lname     IN varchar2,
+c_mname     IN varchar2,
+c_addr1     IN varchar2,
+c_addr2     IN varchar2 ,
+c_city      IN varchar2,
+c_country   IN varchar2 ,
+c_date_added IN DATE,
+c_region    IN varchar2) 
+as
+BEGIN
+ insert into customer(customer_id,first_name,last_name,middle_name,ADDRESS_LINE1,ADDRESS_LINE2,CITY,
+  COUNTRY,DATE_ADDED,REGION) values(c_id,c_fname,c_lname,c_mname,c_addr1,c_addr2,c_city,c_country,c_date_added,c_region);
+  commit;
+  dbms_output.put_line('Data inserted successfully');
+END;
+/*
+BEGIN 
+add_customer('17','priyanka','p','','india','Andra pradesh','nellore','india',sysdate,'south');
+end;
+*/
+--select * from customer;
+
+-------Create Procedure with IN and OUT parameter----
+
+create or replace procedure add_customer_IN_OUT(
+c_id        IN OUT number,
+c_fname     IN varchar2,
+c_lname     IN varchar2,
+c_mname     IN varchar2,
+c_addr1     IN varchar2,
+c_addr2     IN varchar2 ,
+c_city      IN varchar2,
+c_country   IN varchar2 ,
+c_date_added IN DATE,
+c_region    IN varchar2) 
+as
+BEGIN
+ insert into customer(customer_id,first_name,last_name,middle_name,ADDRESS_LINE1,ADDRESS_LINE2,CITY,
+  COUNTRY,DATE_ADDED,REGION) values(c_id,c_fname,c_lname,c_mname,c_addr1,c_addr2,c_city,c_country,c_date_added,c_region);
+  commit;
+  dbms_output.put_line('Data inserted successfully');
+  select count(1) into c_id from customer;
+END;
+/*
+DECLARE
+ tcount number(10):=19;
+BEGIN 
+add_customer_in_out(tcount,'Narasimha','Reddy','palem','india','Andra pradesh','ongole','india',sysdate,'south');
+dbms_output.put_line(tcount);
+end;
+*/
+--select * from customer;
+
+----------Create Function----------
+create or replace FUNCTION find_salescount(
+p_sales_date IN date) return number
+as 
+no_of_sales number:=0;
+BEGIN
+select count(*) into no_of_sales from sales where  sales_date=  p_sales_date;
+return no_of_sales;
+end find_salescount;
+
+--select find_salescount(to_date('01-JAN-2015','dd-mon-yyyy')) from dual;
+
+------------Exceptions in PLSQL------
+create or replace procedure get_customer(
+c_id        IN number) 
+as
+c_name customer.first_name%type;
+c_country customer.country%type;
+ex_customer_id Exception;
+BEGIN
+ if c_id<0 then
+ raise ex_customer_id;
+ end if;
+ Select first_name, country into c_name,c_country from customer where customer_id=c_id;
+   dbms_output.put_line('Data fetched successfully'||c_name||'  '||c_country);
+Exception
+   when ex_customer_id then
+    dbms_output.put_line('Norecords found with that id');
+  when no_data_found then
+    dbms_output.put_line('No customer found!');
+  when too_many_rows then 
+    dbms_output.put_line('multiple rows found with that id');
+  when others then
+    dbms_output.put_line('Error!');
+END;
+
+/*
+BEGIN
+ get_customer(-1);
+end;
+*/
+
+--select * from customer;
+
+---------------------Packages------
+--Package Spec--
+create or replace package get_customer_p
+as
+procedure get_customer(
+c_id        IN number);
+end get_customer_p;
+
+---Package body----
+create or replace package body get_customer_p
+as
+procedure get_customer(
+c_id        IN number) 
+as
+c_name customer.first_name%type;
+c_country customer.country%type;
+ex_customer_id Exception;
+BEGIN
+ if c_id<0 then
+ raise ex_customer_id;
+ end if;
+ Select first_name, country into c_name,c_country from customer where customer_id=c_id;
+   dbms_output.put_line('Data fetched successfully'||c_name||'  '||c_country);
+Exception
+   when ex_customer_id then
+    dbms_output.put_line('Norecords found with that id');
+  when no_data_found then
+    dbms_output.put_line('No customer found!');
+  when too_many_rows then 
+    dbms_output.put_line('multiple rows found with that id');
+  when others then
+    dbms_output.put_line('Error!');
+END get_customer;
+END get_customer_p;
+
+---EXECUTE GET_CUSTOMER_P.get_customer(-1);
+
+-------------------
