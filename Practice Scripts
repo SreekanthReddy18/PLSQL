@@ -293,4 +293,20 @@ END;
 
 --EXECUTE PROCESS_CUSTOMER(17);
 
+--------User Defined Records-----
+Create or replace procedure process_customer
+(c_id IN customer.customer_id%TYPE)
+IS
+TYPE CUSTOMER_REC IS RECORD
+(FIRST_NAME VARCHAR2(50),LAST_NAME VARCHAR2(50));
+C_REC CUSTOMER_REC;
+BEGIN
+select FIRST_NAME, LAST_NAME into c_rec from customer where customer_id=c_id;
+DBMS_OUTPUT.PUT_LINE(c_rec.first_name);
+dbms_output.put_line(c_rec.last_name);
+END;
+
+--EXECUTE PROCESS_CUSTOMER(13);
+
 --------
+
