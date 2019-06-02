@@ -285,6 +285,8 @@ Create or replace procedure show_customer(customer_in IN customer%ROWTYPE)
 IS
 BEGIN
 -- Insert into customer values customer_in;
+--update customer set row = customer_id where customer_id = customer_in.customer_id;
+--commit;
 DBMS_OUTPUT.PUT_LINE(CUSTOMER_IN.first_name);
 dbms_output.put_line(customer_in.last_name);
 END;
