@@ -270,4 +270,25 @@ END get_customer_p;
 
 ---EXECUTE GET_CUSTOMER_P.get_customer(-1);
 
--------------------
+
+-------------------Records----
+Create or replace procedure process_customer
+(c_id IN customer.customer_id%TYPE)
+IS
+c_rec customer%rowtype;
+BEGIN
+select * into c_rec from customer where customer_id=c_id;
+show_customer(c_rec);
+END;
+
+Create or replace procedure show_customer(customer_in IN customer%ROWTYPE)
+IS
+BEGIN
+-- Insert into customer values customer_in;
+DBMS_OUTPUT.PUT_LINE(CUSTOMER_IN.first_name);
+dbms_output.put_line(customer_in.last_name);
+END;
+
+--EXECUTE PROCESS_CUSTOMER(17);
+
+--------
